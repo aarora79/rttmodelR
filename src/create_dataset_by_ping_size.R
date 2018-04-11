@@ -1,4 +1,4 @@
-source("globals.R")
+source("src/globals.R")
 
 create_dataset_by_ping_size <- function(bytes, df) {
   #create a directory to store the clean data

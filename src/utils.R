@@ -1,4 +1,5 @@
-source("globals.R")
+source("src/globals.R")
+
 DEFAULT_PLOT_WIDTH  = 5
 DEFAULT_PLOT_HEIGHT = 3
 options(warnPartialMatchArgs = FALSE) #to avoid the warning with ggsave about file and filename

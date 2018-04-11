@@ -1,5 +1,5 @@
-source("globals.R")
-source("analyze.R")
+source("src/globals.R")
+source("src/analyze.R")
 
 bytes = c(40, 108, 808, 1480)
 map(bytes, analyze_ping_resp_data)

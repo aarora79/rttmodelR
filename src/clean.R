@@ -1,6 +1,6 @@
 #include code from other modules
-source("globals.R")
-source("create_dataset_by_ping_size.R")
+source("src/globals.R")
+source("src/create_dataset_by_ping_size.R")
 
 clean_ping_resp_data <- function() {
   ########## Get the data ###################
@@ -37,7 +37,8 @@ clean_ping_resp_data <- function() {
            rtt = as.numeric(str_split(V13, "=", simplify = T)[,2]),
            bytes = as.numeric(V7),
            seq = as.numeric(str_split(V11, "=", simplify = T)[,2])) %>%
-    select(timestamp, rtt, bytes, seq) 
+    select(timestamp, rtt, bytes, seq) %>%
+    filter(rtt < RTT_ERROR_THRESHOLD)
   
   #lets take a look at the data again
   sample_n(df, 10)

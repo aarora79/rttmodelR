@@ -1,6 +1,7 @@
-source("utils.R")
+source("src/utils.R")
 
 analyze_ping_resp_data <- function(bytes) {
+  #bytes = 808
   flog.info("going to analyze ping dataset for bytes=%d", bytes)
   start_time <- Sys.time()
   
@@ -85,12 +86,12 @@ analyze_ping_resp_data <- function(bytes) {
     labs(colour = "Ping Size") 
   save_plot(p, file_name=paste0(bytes, "_byte_ping_5_minute_average_rtt_density_plot.png"))
   
-  sum(df$rtt > RTT_HIGH_WATERMARK)
-  mean(df$rtt > RTT_HIGH_WATERMARK)
+  sum(df$rtt > RTT_CONG_HIGH_WATERMARK)
+  mean(df$rtt > RTT_CONG_HIGH_WATERMARK)
   
   #find out streaks of high ping times
   df_high_ping_times = df %>%
-    filter(rtt >= RTT_HIGH_WATERMARK) %>%
+    filter(rtt >= RTT_CONG_HIGH_WATERMARK) %>%
     mutate(gap = as.numeric(timestamp - lag(timestamp))) %>%
     filter(gap > LAG_THRESHOLD) %>%
     select(timestamp, bytes, gap)
@@ -116,9 +117,23 @@ analyze_ping_resp_data <- function(bytes) {
 #probability
 #find out streaks of high ping times
 #df_high_ping_times_prob = df %>%
-#filter(rtt >= RTT_HIGH_WATERMARK) %>%
+#filter(rtt >= RTT_CONG_HIGH_WATERMARK) %>%
 #  group_by(day(timestamp)) %>%
-#  summarise(prob_high_watermark = mean(rtt >= RTT_HIGH_WATERMARK))
+#  summarise(prob_high_watermark = mean(rtt >= RTT_CONG_HIGH_WATERMARK))
 
 
-
+analyze_all <- function() {
+  bytes = c(40, 108, 808, 1480)
+  map(bytes, analyze_ping_resp_data)
+  
+  ##files <- file.path("data", dir("data", pattern = "*_high_ping_response_times.csv"))
+  ##data <- files %>%
+  ##  map(read.csv, skip=0, sep=",", stringsAsFactors = F) %>%    # read in all the files individually, using
+    # the function read_csv() from the readr package
+    
+  ##  reduce(rbind) %>%        # reduce with rbind into one dataframe
+  ##  select(gap)
+  ##df = data[data$bytes == 808,]
+  ##df = data
+  ##plot(density(df$gap))
+}
