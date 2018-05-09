@@ -2,14 +2,14 @@
 source("src/globals.R")
 source("src/create_dataset_by_ping_size.R")
 
-clean_ping_resp_data <- function() {
+clean_ping_resp_data <- function(pattern, mon) {
   ########## Get the data ###################
   
   # we use the map reduce paradigm instead of writing a for loop
   # take each file, apply a map function (in this case read.table)
   # and then reduce (combine) the output from each operation
   # using a row bind i.e. concatenate all the dataframes
-  files <- file.path("raw_data", dir(path = "raw_data", pattern = "*.txt"))
+  files <- file.path("raw_data", dir(path = "raw_data", pattern = paste0("^", pattern)))
   data <- files %>%
     map(read.table, header=F, sep = "", skip=1, stringsAsFactors=F, fill=T) %>%    # read in all the files individually, using
     # the function read.table() from the utils package
@@ -29,7 +29,8 @@ clean_ping_resp_data <- function() {
   #2. only include rows parsed correctly
   #3. combine fields to create a date string and then convert to date
   #4. parse out rtt, bytes, sequence number
-  ping_sizes_of_interest = c("40", "108", "808", "1480")
+  #ping_sizes_of_interest = c("40", "108", "808", "1480")
+  ping_sizes_of_interest = c("40")
   df = data %>%
     as.tibble() %>%   
     filter(V7 %in% ping_sizes_of_interest) %>% 
@@ -37,7 +38,8 @@ clean_ping_resp_data <- function() {
            rtt = as.numeric(str_split(V13, "=", simplify = T)[,2]),
            bytes = as.numeric(V7),
            seq = as.numeric(str_split(V11, "=", simplify = T)[,2])) %>%
-    select(timestamp, rtt, bytes, seq) %>%
+    filter(month(timestamp) == mon) %>%
+    dplyr::select(timestamp, rtt, bytes, seq) %>%
     filter(rtt < RTT_ERROR_THRESHOLD)
   
   #lets take a look at the data again
@@ -48,5 +50,5 @@ clean_ping_resp_data <- function() {
   fname = file.path("data", "ping.csv")
   write.csv(df, fname, row.names = F)
   
-  map(unique(df$bytes), create_dataset_by_ping_size, df)
+  map(unique(df$bytes), create_dataset_by_ping_size, df, pattern)
 }

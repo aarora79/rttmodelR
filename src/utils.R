@@ -8,6 +8,7 @@ save_plot <- function(obj, file_name, dir_name="plots", plot_width=DEFAULT_PLOT_
   dir.create(dir_name, showWarnings = FALSE)
   file_path = file.path(dir_name, file_name)
   #, width=plot_width, height=plot_height, units="in"
+  unlink(file_path)
   ggsave(filename=file_path, obj)
   flog.info("created files %s...", file_path)
 }

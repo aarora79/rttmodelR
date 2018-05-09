@@ -1,11 +1,11 @@
 source("src/utils.R")
 
-analyze_ping_resp_data <- function(bytes) {
+analyze_ping_resp_data <- function(bytes, pattern) {
   #bytes = 808
   flog.info("going to analyze ping dataset for bytes=%d", bytes)
   start_time <- Sys.time()
   
-  fname = file.path("data", paste0("ping_", bytes, ".csv"))
+  fname = file.path("data", paste0(pattern, "_ping_", bytes, ".csv"))
   df = read.csv(fname, stringsAsFactors = F) 
   
   #convert timestamp from string to POSIXct
@@ -94,7 +94,7 @@ analyze_ping_resp_data <- function(bytes) {
     filter(rtt >= RTT_CONG_HIGH_WATERMARK) %>%
     mutate(gap = as.numeric(timestamp - lag(timestamp))) %>%
     filter(gap > LAG_THRESHOLD) %>%
-    select(timestamp, bytes, gap)
+    dplyr::select(timestamp, bytes, gap)
   save_csv(df_high_ping_times, file_name=paste0(bytes, "_byte_high_ping_response_times.csv"))
   
   p <- df_high_ping_times %>%
@@ -122,9 +122,10 @@ analyze_ping_resp_data <- function(bytes) {
 #  summarise(prob_high_watermark = mean(rtt >= RTT_CONG_HIGH_WATERMARK))
 
 
-analyze_all <- function() {
-  bytes = c(40, 108, 808, 1480)
-  map(bytes, analyze_ping_resp_data)
+analyze_all <- function(pattern) {
+  #bytes = c(40, 108, 808, 1480)
+  bytes = c(40)
+  map(bytes, analyze_ping_resp_data, pattern)
   
   ##files <- file.path("data", dir("data", pattern = "*_high_ping_response_times.csv"))
   ##data <- files %>%
@@ -132,7 +133,7 @@ analyze_all <- function() {
     # the function read_csv() from the readr package
     
   ##  reduce(rbind) %>%        # reduce with rbind into one dataframe
-  ##  select(gap)
+  ##  dplyr::select(gap)
   ##df = data[data$bytes == 808,]
   ##df = data
   ##plot(density(df$gap))

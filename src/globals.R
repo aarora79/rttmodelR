@@ -12,6 +12,13 @@ library(viridis)
 library(scales)
 library(tidyquant)
 library(VGAM)
+library(MCMCpack)
+library(mcmcplots)
+library(knitr)
+library(kableExtra)
+library(gridExtra)
+library(grid)
+library(png)
 
 # high watermark for congestion i.e. any value more than this means serious congestion
 RTT_CONG_HIGH_WATERMARK = 5000 
