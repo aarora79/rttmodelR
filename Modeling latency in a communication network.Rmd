@@ -80,9 +80,10 @@ We use a Gamma prior $\theta \sim Gamma(\alpha, \beta)$ where $\alpha$ is known 
 The full conditional posteriors of $\theta$ and $\beta$ are both recognizable as the kernels of a Gamma distribution. Using a Gibbs Sampler, and given starting values of $\theta^{(0)}$ and $\beta^{(0)}$, we obtain draws from the posterior by iterating between draws of
 
 1. $\theta^{(t)}|\alpha,\beta^{(t-1)},a,b \sim Gamma(n+\alpha, \left(\sum_{i=1}^{N}log(\frac{r_i}{r_m})\right) + \beta^{(t-1)})$  
-  2. $\beta^{(t)}|\alpha,\theta^{(t-1),a,b} \sim Gamma(a+\alpha, b+\theta^{(t-1)})$
+
+2. $\beta^{(t)}|\alpha,\theta^{(t-1)},a,b \sim Gamma(a+\alpha, b+\theta^{(t-1)})$
   
-  We use four different starting point for $\beta^{0}$, combine the four chains after a 50% burn-in and thining (we keep every 5th draw). Once we have drawn 20,000 samples (after burn-in and thining), we evaluate the model parameters using the graphical summaries and posterior predictive distributions of the test statistics $T_{10}, T_{20},..,T_{100}$ in the same way we did for the flat prior. Appendix C provides convergence analysis plots for $\theta$ and $\beta$ and also the Gelman Rubin statistic to test convergence.
+We use four different starting point for $\beta^{0}$, combine the four chains after a 50% burn-in and thining (we keep every 5th draw). Once we have drawn 20,000 samples (after burn-in and thining), we evaluate the model parameters using the graphical summaries and posterior predictive distributions of the test statistics $T_{10}, T_{20},..,T_{100}$ in the same way we did for the flat prior. Appendix C provides convergence analysis plots for $\theta$ and $\beta$ and also the Gelman Rubin statistic to test convergence.
 
 ### Creating summaries for new data
 We use the draws from the posterior distribution of the shape parameter $\theta$ and a new value of $r_m$ as seen from the new data to again create the posterior predictive distributions of the test statistics  $T_{10}, T_{20},..,T_{100}$ to be able to answer questions such as what is the $75^{th}$ percentile RTT value for the new data (for example a single day in April 2018).
@@ -113,7 +114,7 @@ The sensitivity analysis indicates that there is little to choose from between t
 
 Also, the models fits only about half the density. However, the portion of the density that the models do fit are the more important portions as we are more interested in making inferences about a larger percentage of the data i.e. being able to draw inference about say the upper bound on the RTT value for 75% of the traffic is more useful than being able to draw inference on say the 10% percent of the traffic that experienced much (better) smaller RTT. 
 
-As seen in this figure 3, the credible interval for the month of April seems to have shifted towards slightly smaller RTT values indicating that for this network there was some change which resulted in network traffic experiencing smaller latencies. A network operator familiar with this particular network should be able to attribute this reduction in latency values.
+As seen in this figure 3, the credible interval for the month of April seems to have shifted towards slightly smaller RTT values indicating that for this network there was some change which resulted in network traffic experiencing smaller latencies. A network operator familiar with this particular network should be able to attribute this reduction in latency values to some endogenous and/or exogenous factor.
 
 ```{r echo=FALSE, fig.cap="Model comparison, March 2018 and April 2018 datasets", out.width = '100%'}
 knitr::include_graphics("plots/figure4.png")
@@ -187,11 +188,11 @@ $p(\beta|R, r_m, \theta) \propto exp[-\theta\beta]\beta^\alpha\beta^{a-1}exp[-b\
   
   $\beta|R, r_m,\theta \sim Gamma(\alpha+a, \hspace{1mm}\theta+b)$
   
-  Using a Gibbs Sampler, and given starting values of $\theta^{(0)}$ and $\beta^{(0)}$, we obtain draws from the posterior by iterating between draws of
+Using a Gibbs Sampler, and given starting values of $\theta^{(0)}$ and $\beta^{(0)}$, we obtain draws from the posterior by iterating between draws of
 
 1. $\theta^{(t)}|\alpha,\beta^{(t-1)},a,b \sim Gamma(n+\alpha, \left(\sum_{i=1}^{N}log(\frac{r_i}{r_m})\right) + \beta^{(t-1)})$
   
-  2. $\beta^{(t)}|\alpha,\theta^{(t-1),a,b} \sim Gamma(a+\alpha, b+\theta^{(t-1)})$
+2. $\beta^{(t)}|\alpha,\theta^{(t-1)},a,b \sim Gamma(a+\alpha, b+\theta^{(t-1)})$
   
 ## Appendix B: Code
   

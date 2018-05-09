@@ -1,0 +1,56 @@
+---
+title: "MATH-640 project proposal"
+author: "Amit Arora"
+date: "April 20, 2018"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introduction
+
+Round trip times on a communication link are typically long tailed and can be modeled using the Pareto Type 1 distribution. Data is collected from a high delay bandwidth network for round trip time measurements over a one month period. This data is then modeled using a Pareto Type 1 distribution with a known minimum $r_m$ and a shape parameter $\theta$. A conjugate prior $Gamma(\alpha, \beta)$ is placed on $\theta$, such that the hyper parameters $\alpha$ and $\beta$ themselves are drawn from two independant Gamma distributions $Gamma(a_1, b_1)$ and $Gamma(a_2, b_2)$.
+
+A Gibbs-MH sampler is used to draw samples from the joint posterior $p(\theta, \alpha, \beta|R)$ where $R$ represents the dataset of round trip times. A particular test statistic of intrest is the 75th percentile of the round trip time, denoted by $T_{75}$. Summaries are created for $T_{75}|\theta^{(b)}, \alpha^{(b)}, \beta^{(b)}$ and the adequacy of fit of the model is tested by comparing the observed value of $T_{75}$ with the created summaries.
+
+# Methods
+Here is a density plot of the observed data. 
+
+```{r echo=F}
+set.seed(20092013)
+bytes = 40
+fname = file.path("data", paste0("ping_", bytes, ".csv"))
+df = read.csv(fname, stringsAsFactors = F) 
+r = df$rtt[df$rtt>0]
+plot(density(r), 
+     xlab="Round trip time (milliseconds)",
+     main="Density plot for round trip time for 32 byte pings")
+```
+
+The Pareto likelihood can be expressed as follows
+
+$\mathcal{L}(R|\theta,r_m) = \prod_{i=1}^{n}\frac{\theta}{r_m}\left(\frac{r_m}{r_i}\right)^{\theta+1}$.
+$p(r_i) = \frac{\alpha}{\lambda}(\frac{\lambda}{r_i})^{\alpha+1}$
+  
+$\mathcal{L}(R|\alpha,\lambda)=\prod_{i=1}^{n}\frac{\alpha}{\lambda}(\frac{\lambda}{r_i})^{\alpha+1}$
+    
+$\mathcal{L}(R|\alpha,\lambda)=\alpha^{n}\lambda^{n\alpha}\prod_{i=1}^{n}(r_i)^{-(\alpha+1)}$
+      
+$\propto \alpha^{n}\lambda^{n\alpha} \prod_{i=1}^{n}exp[log((r_i)^{-(\alpha+1)})]$
+      
+$=\alpha^{n}\lambda^{n\alpha} \prod_{i=1}^{n}exp[-(\alpha+1)log(r_i)]$
+        
+$=\alpha^{n}\lambda^{n\alpha} exp[-(\alpha+1)\sum_{i=1}^{n}log(r_i)]$
+          
+$=\alpha^{n}\lambda^{n\alpha} exp[-\alpha\sum_{i=1}^{n}log(r_i)]$
+            
+            
+Joint Posterior, assuming $\pi(\alpha, \lambda) \propto(\sigma^{2})^{-\frac{1}{2}}exp[-\frac{\lambda-\lambda_0}{2\sigma^{2}}]$
+            
+            
+$p(\alpha,\lambda|R) \propto \alpha^{n}\lambda^{n\alpha} exp[-\alpha\sum_{i=1}^{n}log(r_i)] \times 1 \times (\sigma^{2})^{-\frac{1}{2}}exp[-\frac{\lambda-\lambda_0}{2\sigma^{2}}]$
+            
+$p(\alpha,\lambda|R) \propto \alpha^{n}\lambda^{n\alpha} exp[-\alpha\sum_{i=1}^{n}log(r_i)] \hspace{1mm}exp[-\frac{\lambda-\lambda_0}{2\sigma^{2}}]$
+            
