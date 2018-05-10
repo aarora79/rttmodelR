@@ -564,7 +564,7 @@ write.csv(eval_results, fname, row.names = F)
 This section presents some additional results that were observed but not included in the main paper.
 
 ### Model fit
-The following plot presents the density of the samples generated from the Pareto Type 1 distribution using a point estimate of $\theta$ obtained from the Gibbs sampler overlayed on top of the density of the original dataset (low-res version).
+The following plot presents the density of the samples generated from the Pareto Type 1 distribution using a point estimate (median) of $\theta$ obtained from the Gibbs sampler overlayed on top of the density of the original dataset (low-res version).
 
 The density for a sample $r_i$ under this model is given by $p(r_i) = \frac{1.89}{543}\left(\frac{543}{r_i}\right)^{(1.89+1)}$
 
