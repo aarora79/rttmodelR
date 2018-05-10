@@ -36,15 +36,15 @@ library(png)
 
 Latency is a key metric for network performance especially during periods of congestion. One of the measures of network latency is round trip time (RTT) which is defined as the length of time it takes for a data packet to be sent from a sender on one side of the link to a receiver on the other side and its acknowledgement to be received back by the sender. A larger RTT generally implies that the network might be congested or there may be other anomalies. 
 
-We collected RTT measurements from a communication network for a two month period (March-April 2018) and studied their distribution. Data is split into two datasets, a training dataset corresponding to data from March 2018 and a test dataset corresponding to data from April 2018. All RTT meansurments are in milliseconds and correspond to a 40 byte packet. 
+We collected RTT measurements from a communication network for a two month period (March-April 2018) and studied their distribution. Data is split into two datasets, a training dataset corresponding to data from March 2018 and a test dataset corresponding to data from April 2018. All RTT measurements are in milliseconds and correspond to a 40 byte packet. 
 
 There were two main objectives of this study as listed below.
 
-1. Determine if the RTT measurements could be modelled as a well known distribution (see Figure 1) and if so use the draws from the posterior of the model parameters to make inferences on key test statistics (such as the 75th percentile of the RTT which would represent the upper bound on the RTT for 75% of the traffic).
+1. Determine if the RTT measurements could be modeled as a well known distribution (see Figure 1) and if so use the draws from the posterior of the model parameters to make inferences on key test statistics (such as the 75th percentile of the RTT which would represent the upper bound on the RTT for 75% of the traffic).
 
 2. Use the draws from the posterior of the model parameters to make inferences about new data collected in the future without having to collect large amount of data. Answer questions such as "is the network more congested now than it was last month?", "has the 75th percentile of the RTT increased?". Any change in the inferences about new data as compared to the original data could then be viewed in context of either endogenous factors (such as upgrade of a key network component) or exogenous factors (such as huge subscriber growth) or a combination thereof.
 
-The data was modelled using the Pareto Type I distribution first using a flat prior for the scale parameter and then using a (Gamma) conjugate prior. Gibbs sampler was used to sample from the full conditional distribution for the scale parameter and the hyperparameter used for the conjugate prior.
+The data was modeled using the Pareto Type I distribution first using a flat prior for the scale parameter and then using a (Gamma) conjugate prior. Gibbs sampler was used to sample from the full conditional distribution for the scale parameter and the hyper-parameter used for the conjugate prior.
 
 The remainder of this analysis is organized as follows: Section 2 discusses the methods used; Section 3 describes the results from the analyses; and Section 4 discusses the overall results and next steps for analysis. Appendix A includes full derivations and Appendix B contains all R code used in this study and finally Appendix C contains some additional results (convergence diagnostics).
 
@@ -67,7 +67,7 @@ A density plot of both the original data and its low-resolution version is prese
 
 ![Density plot of actual data and low-res version](plots\train_density_rtt.png)
 
-A Pareto Type I distribution is used to model the (low-resolution version) of RTT measurement data. The scale parameter is fixed at the minimum RTT value seen in the dataset and the shape parameter is modelled by using a flat prior and also by using a Gamma conjugate. Unless stated otherwise the term dataset refers to the low-resolution equivalent of the original dataset. A pareto Type 1 density can be written as follows: $p(r_i) = \frac{\theta}{r_m}\left(\frac{r_m}{r_i}\right)^{\theta+1}$
+A Pareto Type I distribution is used to model the (low-resolution version) of RTT measurement data. The scale parameter is fixed at the minimum RTT value seen in the dataset and the shape parameter is modeled by using a flat prior and also by using a Gamma conjugate. Unless stated otherwise the term dataset refers to the low-resolution equivalent of the original dataset. A Pareto Type 1 density can be written as follows: $p(r_i) = \frac{\theta}{r_m}\left(\frac{r_m}{r_i}\right)^{\theta+1}$
   
   Here $r_i$ the represents the observations $r_1,r_2,..r_N$ from the dataset (N=100) and $r_m$ represents the shape parameter of the Pareto and finally $R$ represents the entire dataset. 
 
@@ -83,7 +83,7 @@ The full conditional posteriors of $\theta$ and $\beta$ are both recognizable as
 
 2. $\beta^{(t)}|\alpha,\theta^{(t-1)},a,b \sim Gamma(a+\alpha, b+\theta^{(t-1)})$
   
-We use four different starting point for $\beta^{0}$, combine the four chains after a 50% burn-in and thining (we keep every 5th draw). Once we have drawn 20,000 samples (after burn-in and thining), we evaluate the model parameters using the graphical summaries and posterior predictive distributions of the test statistics $T_{10}, T_{20},..,T_{100}$ in the same way we did for the flat prior. Appendix C provides convergence analysis plots for $\theta$ and $\beta$ and also the Gelman Rubin statistic to test convergence.
+We use four different starting point for $\beta^{0}$, combine the four chains after a 50% burn-in and thinning (we keep every 5th draw). Once we have drawn 20,000 samples (after burn-in and thinning), we evaluate the model parameters using the graphical summaries and posterior predictive distributions of the test statistics $T_{10}, T_{20},..,T_{100}$ in the same way we did for the flat prior. Appendix C provides convergence analysis plots for $\theta$ and $\beta$ and also the Gelman Rubin statistic to test convergence.
 
 ### Creating summaries for new data
 We use the draws from the posterior distribution of the shape parameter $\theta$ and a new value of $r_m$ as seen from the new data to again create the posterior predictive distributions of the test statistics  $T_{10}, T_{20},..,T_{100}$ to be able to answer questions such as what is the $75^{th}$ percentile RTT value for the new data (for example a single day in April 2018).
@@ -94,7 +94,7 @@ We also recreate the model with the new data (April 2018) to determine the 95% c
 
 **Sensitivty analysis on the training dataset**: A visual comparison (Figure 2) of the posterior densities obtained using the flat prior and the Gibbs sampler using the conjugate prior indicate very little difference between the posteriors. Table 2 presents the median and the 95% credible interval for $\theta$ under both the models.
 
-```{r echo=FALSE, fig.cap="Sensitivity Analysis (March 2018 dataset)", out.width = '82%'}
+```{r echo=FALSE, fig.cap="Sensitivity Analysis (March 2018 dataset)", out.width = '90%'}
 
 pattern <- "train"
 bytes <- 40
@@ -150,7 +150,7 @@ $$p(\theta|R,r_m) \propto \prod_{i=1}^{N}\frac{\theta}{r_m}\left(\frac{r_m}{r_i}
   $$=\theta^{N}exp[\theta \sum_{i=1}^{N}log(r_m)]\hspace{1mm}exp[-\theta\sum_{i=1}^{N}log(r_{i})]$$
   $$=\theta^{N}exp[-\theta \sum_{i=1}^{N}log(\frac{r_i}{r_m})]$$
   
-  We can recognize this as a kernel of the Gamma distribution with parameters $(N+1, \sum_{i=1}^{N}log(\frac{r_i}{r_m}))$. Thus we can write the posterior distribtion as 
+  We can recognize this as a kernel of the Gamma distribution with parameters $(N+1, \sum_{i=1}^{N}log(\frac{r_i}{r_m}))$. Thus we can write the posterior distribution as 
 
 $\theta|R,r_m \sim Gamma(N+1, \sum_{i=1}^{N}log(\frac{r_i}{r_m}))$
   
