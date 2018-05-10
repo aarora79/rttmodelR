@@ -1,5 +1,5 @@
 ---
-title: "Modeling of latency in a communication network"
+title: "Modeling latency in a communication network"
 author: "Amit Arora"
 output:
   pdf_document:
